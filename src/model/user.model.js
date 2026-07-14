@@ -1,4 +1,6 @@
 import { model, Model, Schema } from "mongoose";
+import {UserRole} from "../common/enum/role.js"
+import {StatusAccount} from "../common/enum/status-account.js"
 import { type } from "node:os";
 // USER SHCHEMA 
 const userSchema = new Schema({
@@ -35,6 +37,18 @@ const userSchema = new Schema({
             return "********"
         }
     },
+    // ROLE 
+    role : {
+        type:String,
+        enum : Object.values(UserRole),
+        default:UserRole.USER
+    },
+    // STATUS ACCOUNT 
+    statusAccount : {
+        type:String,
+        enum : Object.values(StatusAccount),
+        default:StatusAccount.ACTIVE,
+    }
 
 },
 {
