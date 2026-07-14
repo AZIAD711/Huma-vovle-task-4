@@ -1,0 +1,33 @@
+Package Managers
+
+1. What is npm?
+npm is the default package manager for Node.js used to install and manage JavaScript packages.
+
+2. What is pnpm?
+pnpm is a fast and disk-efficient package manager for Node.js that uses a shared package store.
+
+3. What are the differences between npm and pnpm?
+npm installs separate package copies, while pnpm uses a shared store to save disk space and improve speed.
+
+4. What is a lock file (package-lock.json / pnpm-lock.yaml) and why is it important?
+A lock file stores the exact package versions to ensure consistent installations across all environments.
+
+5. What is the difference between dependencies and devDependencies?
+dependencies are required to run the application, while devDependencies are only needed during development.
+
+Pagination
+
+1. What is Pagination?
+Pagination is the process of splitting large datasets into smaller pages.
+
+2. Why do we use it?
+We use pagination to improve performance and reduce the amount of data returned in each request.
+
+3. How is it implemented in Express.js and MongoDB?
+Pagination is implemented using query parameters with MongoDB's skip() and limit() methods.
+
+4. What are page and limit query parameters?
+page specifies the page number, and limit specifies the number of records per page.
+
+5. How can you calculate the number of documents to skip using skip()?
+The number of documents to skip is calculated as (page - 1) × limit

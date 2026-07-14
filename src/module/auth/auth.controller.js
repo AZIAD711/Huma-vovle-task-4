@@ -1,6 +1,10 @@
 import { addNewUserService ,getAllUsersService,getUserByIdService,updateUserService,deleteUserService,searchByEmailService} from "./auth.service.js";
-import { createdDataResponse,dataFoundResponse,dataUpdatedResponse,dataDeletedResponse } from "../../common/response/sccuess.js";
-import { internalServerResponse } from "../../common/response/error.js";
+import { createdDataResponse,dataFoundResponse,dataUpdatedResponse,dataDeletedResponse, successResponse } from "../../common/response/sccuess.js";
+import { badRequestResponse, internalServerResponse } from "../../common/response/error.js";
+import userModel from "../../model/user.model.js";
+import { response } from "express";
+import {decodedToken,generateToken,loginCredentials,verfiyToken} from "../../common/token/token.js"
+import {TokenType} from "../../common/enum/token-type.js"
 
 // ADD NEW USER
 export const addNewUserController = async (request, response) => {
@@ -118,6 +122,73 @@ export const searchByEmailController = async (request, response) => {
     } catch (error) {
         console.log("❌ ERROR IN USER CONTROLLER:", error);
 
+        return internalServerResponse({
+            response,
+            message: error.message,
+        });
+    }
+};
+// LOGIN USER 
+export const loginController = async (request, response) => {
+    try {
+        const { email, password } = request.body;
+
+        // Find user by email
+        const user = await userModel.findOne({ email });
+        console.log(user)
+
+        if (!user) {
+            return badRequestResponse({
+                response,
+                message: "Invalid email or password!",
+            });
+        }
+
+        // Compare password
+        // const isMatched = await bcrypt.compare(password, user.password);
+
+        // if (!isMatched) {
+        //     return badRequestResponse({
+        //         response,
+        //         message: "Invalid email or password!",
+        //     });
+        // }
+
+        // Get secrets for the user's role
+        const secrets = loginCredentials(user.role);
+        console.log(secrets)
+        const accessToken = generateToken({
+            payload: {
+                id: user._id,
+                role: user.role,
+            },
+            secretKey: secrets[TokenType.ACCESS],
+            options: {
+                expiresIn: "1h",
+            },
+        });
+
+        const refreshToken = generateToken({
+            payload: {
+                id: user._id,
+                role: user.role,
+            },
+            secretKey: secrets[TokenType.REFRESH],
+            options: {
+                expiresIn: "7d",
+            },
+        });
+
+        return successResponse({
+            response,
+            message: "Login successful",
+            data: {
+                accessToken,
+                refreshToken,
+            },
+        });
+    } catch (error) {
+        console.log("❌ ERROR IN USER CONTROLLER:", error);
         return internalServerResponse({
             response,
             message: error.message,
